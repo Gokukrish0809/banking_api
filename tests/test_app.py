@@ -109,7 +109,6 @@ def test_perform_transfer_insufficient_and_success(db_session):
     assert tr.amount == Decimal("30")
     # timestamp was set using our patched TIMEZONE
     assert isinstance(tr.timestamp, datetime)
-    #assert tr.timestamp.tzinfo == timezone.utc
 
 def test_get_transfer_history_for_account(db_session):
     # Single customer, two accounts

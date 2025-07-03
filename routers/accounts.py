@@ -83,7 +83,7 @@ def get_balance(
             detail=f"Database lookup error: {e}"
         )
     
-     # **NEW**: handle util returning None
+     # handle util returning None
     if account is None:
         raise HTTPException(status_code=404, detail="Account not found")
     
