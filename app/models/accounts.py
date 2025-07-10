@@ -109,10 +109,10 @@ class Account(Base):
     """
 
     __tablename__ = "accounts"
+
     account_number = Column(Integer, primary_key=True, index=True)
     balance = Column(Numeric(precision=12, scale=2), default=Decimal("0.00"))
     customer_id = Column(Integer, ForeignKey("customers.customer_id"))
-
     customer = relationship("Customer", back_populates="accounts")
 
     sent_transfers = relationship(

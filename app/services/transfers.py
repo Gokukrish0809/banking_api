@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import app.services.accounts as accounts_service
 from app.config import TIMEZONE
 from app.exceptions import (InsufficientFundsError,
-                            SameAccountError)
+                            SameAccountError, AccountNotFoundError)
 from app.models.transfers import Transfer
 
 
@@ -73,12 +73,16 @@ def get_transfer_history_for_account(
 
     (No exceptions are raised here; any SQLAlchemyError will propagate to the caller.)
     """
+    account_validated = accounts_service.get_account_by_number(account_number)
 
+    if not account_validated :
+        raise AccountNotFoundError(account_validated.account_number)
+    
     return (
         db.query(Transfer)
         .filter(
-            (Transfer.from_account_number == account_number)
-            | (Transfer.to_account_number == account_number)
+            (Transfer.from_account_number == account_validated.account_number)
+            | (Transfer.to_account_number == account_validated.account_number)
         )
         .order_by(Transfer.timestamp.desc())
         .all()

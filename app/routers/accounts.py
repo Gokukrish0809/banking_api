@@ -32,19 +32,6 @@ router = APIRouter()
         },
         500: {"description": "Internal server error"},
     },
-    openapi_extra={
-        "requestBody": {
-            "content": {
-                "application/json": {
-                    "example": {
-                        "name": "Alice Wonderland",
-                        "email": "alice@example.com",
-                        "initial_deposit": "250.00"
-                    }
-                }
-            }
-        }
-    }
 )
 def create_account(
     customer: CustomerInput,

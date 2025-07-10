@@ -16,8 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy your application code
 COPY . .
 
-# Expose the port Uvicorn will run on
-EXPOSE 8000
+# run pytest and start uvicorn server
 
-# Default command
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+COPY startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+CMD["/startup.sh"]

@@ -26,19 +26,6 @@ router = APIRouter()
         404: {"Description ": "Account not found"},
         500: {"Description ": "Internal server error"},
     },
-    openapi_extra={
-        "requestBody": {
-            "content": {
-                "application/json": {
-                    "example": {
-                        "from_account_number": 1234,
-                        "to_account_number": 5678,
-                        "amount": "100.00"
-                    }
-                }
-            }
-        }
-    }
 )
 def transfer_funds(
     transfer: TransferInput,
@@ -91,6 +78,8 @@ def get_transfer_history(
     """
     try:
         history = transfer_service.get_transfer_history_for_account(db, account_number)
+    except AccountNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 

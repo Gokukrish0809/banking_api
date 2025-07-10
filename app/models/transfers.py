@@ -69,6 +69,7 @@ class Transfer(Base):
     """
 
     __tablename__ = "transfers"
+    
     id = Column(Integer, primary_key=True, index=True)
     from_account_number = Column(
         Integer, ForeignKey("accounts.account_number"), nullable=False

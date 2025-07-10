@@ -9,7 +9,7 @@ from app.models.accounts import Account, Customer
 
 def create_customer(db: Session, customer_data) -> Customer:
     """
-    Retrieve an existing customer by email or create a new one.
+    Retrieve an existing customer by email if exists or create a new one.
 
     Args:
         db (Session): SQLAlchemy database session.
