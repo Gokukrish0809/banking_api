@@ -1,6 +1,7 @@
 from decimal import Decimal
 import pytest
 from fastapi.testclient import TestClient
+from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
 
 import app.services.transfers as transfer_service
@@ -20,7 +21,7 @@ def create_account(client: TestClient, name: str, email: str, deposit: Decimal) 
         "/accounts/",
         json={"name": name, "email": email, "initial_deposit": str(deposit)},
     )
-    assert resp.status_code == 200
+    assert resp.status_code == status.HTTP_201_CREATED
     return resp.json()["account_number"]
 
 
@@ -33,17 +34,17 @@ BASE = "/transfers"
 
 def test_transfer_funds_happy_path(client: TestClient):
     acc1 = create_account(client, "Alice", "alice@example.com", Decimal("100.00"))
-    acc2 = create_account(client, "Bob", "bob@example.com", Decimal(" 50.00"))
+    acc2 = create_account(client, "Bob", "bob@example.com", Decimal("50.00"))
 
     resp = client.post(
         BASE + "/", json=make_transfer_payload(acc1, acc2, Decimal("30.00"))
     )
-    assert resp.status_code in (200, 201)
+    assert resp.status_code == status.HTTP_201_CREATED
     data = resp.json()
     assert data["from_account_number"] == acc1
     assert data["to_account_number"] == acc2
-    # JSON comes back as string or number; convert to Decimal for comparison
-    assert Decimal(str(data["amount"])) == Decimal("30.00")
+    # JSON comes back as string for Decimal
+    assert data["amount"] == "30.00"
     assert "timestamp" in data
 
 
@@ -52,7 +53,7 @@ def test_transfer_funds_same_account(client: TestClient):
     resp = client.post(
         BASE + "/", json=make_transfer_payload(acc, acc, Decimal("10.00"))
     )
-    assert resp.status_code == 404
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
     assert "same account" in resp.json()["detail"].lower()
 
 
@@ -60,7 +61,7 @@ def test_transfer_funds_insufficient(client: TestClient):
     a1 = create_account(client, "Dave", "dave@example.com", Decimal("20.00"))
     a2 = create_account(client, "Eve", "eve@example.com", Decimal("10.00"))
     resp = client.post(BASE + "/", json=make_transfer_payload(a2, a1, Decimal("30.00")))
-    assert resp.status_code == 400
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
     assert "insufficient" in resp.json()["detail"].lower()
 
 
@@ -68,7 +69,7 @@ def test_transfer_funds_not_found(client: TestClient):
     resp = client.post(
         BASE + "/", json=make_transfer_payload(999, 1000, Decimal("5.00"))
     )
-    assert resp.status_code == 404
+    assert resp.status_code == status.HTTP_404_NOT_FOUND
     assert "not found" in resp.json()["detail"].lower()
 
 
@@ -81,7 +82,7 @@ def test_transfer_funds_500(client: TestClient, monkeypatch):
         ),
     )
     resp = client.post(BASE + "/", json=make_transfer_payload(1, 2, Decimal("1.00")))
-    assert resp.status_code == 500
+    assert resp.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert "internal server error" in resp.json()["detail"].lower()
 
 
@@ -93,18 +94,24 @@ def test_get_history_happy_path(client: TestClient):
     client.post(BASE + "/", json=make_transfer_payload(a2, a1, Decimal("5.00")))
 
     resp = client.get(f"{BASE}/{a1}/transfer_history")
-    assert resp.status_code == 200
+    assert resp.status_code == status.HTTP_200_OK
     lst = resp.json()
     assert len(lst) == 2
-    assert Decimal(str(lst[0]["amount"])) == Decimal("5.00")
-    assert Decimal(str(lst[1]["amount"])) == Decimal("10.00")
+    assert lst[0]["amount"] == "5.00"
+    assert lst[1]["amount"] == "10.00"
 
 
 def test_get_history_empty(client: TestClient):
     a = create_account(client, "Henry", "henry@example.com", Decimal("10.00"))
     resp = client.get(f"{BASE}/{a}/transfer_history")
-    assert resp.status_code == 200
+    assert resp.status_code == status.HTTP_200_OK
     assert resp.json() == []
+
+
+def test_get_history_account_not_found(client: TestClient):
+    resp = client.get(f"{BASE}/9999/transfer_history")
+    assert resp.status_code == status.HTTP_404_NOT_FOUND
+    assert resp.json()["detail"] == "Account 9999 not found"
 
 
 def test_get_history_500(client: TestClient, monkeypatch):
@@ -114,5 +121,5 @@ def test_get_history_500(client: TestClient, monkeypatch):
         lambda db, acct: (_ for _ in ()).throw(SQLAlchemyError("simulated db error")),
     )
     resp = client.get(f"{BASE}/1/transfer_history")
-    assert resp.status_code == 500
+    assert resp.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert "internal server error" in resp.json()["detail"].lower()

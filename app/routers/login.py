@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 import app.services.login as login_service
@@ -19,7 +19,7 @@ router = APIRouter()
     ),
     responses={
         200: {"description": "Authentication successful"},
-        404: {"description": "Invalid username or password"},
+        403: {"description": "Invalid username or password"},
         422: {"description": "Missing or invalid form data"},
     },
 )
@@ -28,10 +28,10 @@ def login(request: OAuth2PasswordRequestForm = Depends()) -> Token:
     Authenticates the users username and password and provides an access token.
     """
     if not login_service.verify_username(request.username, USERNAME):
-        raise HTTPException(status_code=404, detail="Invalid username")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid username")
 
     if not login_service.verify_password(request.password, HASH_PASSWORD):
-        raise HTTPException(status_code=404, detail="Invalid password")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid password")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(

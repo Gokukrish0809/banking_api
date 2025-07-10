@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-
 import jwt
 import pytest
 from fastapi import HTTPException, status
@@ -15,6 +14,7 @@ def test_create_access_token_default_expiry():
     # decode to inspect payload
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert payload["sub"] == "alice"
+
     exp_ts = payload["exp"]
     now_ts = int(datetime.now(timezone.utc).timestamp())
     # default is 15 minutes (900 seconds)
@@ -27,6 +27,7 @@ def test_create_access_token_custom_expiry():
     token = create_access_token(data, expires_delta=delta)
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert payload["sub"] == "bob"
+
     exp_ts = payload["exp"]
     now_ts = int(datetime.now(timezone.utc).timestamp())
     # custom is 5 minutes (300 seconds)
@@ -44,15 +45,19 @@ def test_get_current_user_missing_sub():
     # create a token without "sub"
     payload = {"foo": "bar", "exp": datetime.now(timezone.utc) + timedelta(minutes=1)}
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
     with pytest.raises(HTTPException) as exc:
         get_current_user(token)
+    
     assert exc.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert "could not validate credentials" in exc.value.detail.lower()
 
 
 def test_get_current_user_invalid_token():
     bad = "not.a.valid.token"
+
     with pytest.raises(HTTPException) as exc:
         get_current_user(bad)
+    
     assert exc.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert "could not validate credentials" in exc.value.detail.lower()

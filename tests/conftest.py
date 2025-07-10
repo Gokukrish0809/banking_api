@@ -29,7 +29,7 @@ def create_test_db():
 @pytest.fixture(autouse=True)
 def clear_tables(create_test_db):
     sess = TestingSessionLocal()
-    # reverse order handles FKs
+
     for tbl in reversed(Base.metadata.sorted_tables):
         sess.execute(tbl.delete())
     sess.commit()

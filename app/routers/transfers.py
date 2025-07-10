@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -15,11 +15,12 @@ router = APIRouter()
 
 @router.post(
     "/",
+    status_code=status.HTTP_201_CREATED,
     response_model=TransferOutput,
     summary="Transfer funds between accounts",
     description="Moves the specified amount from one account to another. Authentication required.",
     responses={
-        200: {"Description ": "Successful response"},
+        201: {"Description ": "Successful response"},
         400: {
             "Description ": "Can not transfer to the same account or insufficient funds"
         },
@@ -42,13 +43,13 @@ def transfer_funds(
             db, from_acc, to_acc, transfer.amount
         )
     except SameAccountError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except InsufficientFundsError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except AccountNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error : {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error : {e}")
 
     return TransferOutput(
         from_account_number=from_acc,
@@ -65,6 +66,7 @@ def transfer_funds(
     description="Returns all transfers to and from the given account, most recent first. Authentication required.",
     responses={
         200: {"Description ": "Successful response"},
+        404: {"Description ": "Account not found error"},
         500: {"Description ": "Internal server error"},
     }
 )
@@ -79,8 +81,8 @@ def get_transfer_history(
     try:
         history = transfer_service.get_transfer_history_for_account(db, account_number)
     except AccountNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status. HTTP_404_NOT_FOUND, detail=str(e))
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error: {e}")
 
     return history

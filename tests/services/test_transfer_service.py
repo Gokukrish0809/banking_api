@@ -1,8 +1,5 @@
-# tests/test_transfers_service.py
-
 from datetime import datetime
 from decimal import Decimal
-
 import pytest
 
 import app.services.accounts as account_service
@@ -29,11 +26,10 @@ def two_accounts(db_session, mock_customer_input):
 
 def test_perform_transfer_success(db_session, two_accounts):
     acct1, acct2 = two_accounts
-    print(type(acct1.account_number))
     tx = transfer_service.perform_transfer(
         db_session, acct1.account_number, acct2.account_number, Decimal("75")
     )
-    # reload balances from DB
+
     a1 = account_service.get_account_by_number(db_session, acct1.account_number)
     a2 = account_service.get_account_by_number(db_session, acct2.account_number)
 
@@ -56,6 +52,7 @@ def test_same_account_error(db_session, two_accounts):
 def test_insufficient_funds_error(db_session, two_accounts):
     acct1, acct2 = two_accounts
     # acct2 only has 50, try to send 100
+
     with pytest.raises(InsufficientFundsError):
         transfer_service.perform_transfer(
             db_session, acct2.account_number, acct1.account_number, Decimal("100")
@@ -81,7 +78,7 @@ def test_get_transfer_history(db_session, two_accounts):
     history = transfer_service.get_transfer_history_for_account(
         db_session, acct1.account_number
     )
-    # Should return both, most recent first 5 then 10
+
     assert len(history) == 2
     assert history[0].amount == Decimal("5")
     assert history[1].amount == Decimal("10")

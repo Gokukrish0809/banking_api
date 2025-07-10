@@ -19,6 +19,7 @@ def test_create_customer_exists(db_session, mock_customer_record, mock_customer_
     # Add a customer record to mock db
     db_session.add(mock_customer_record)
     db_session.commit()
+
     # Test create customer with existing customer details
     resp = service.create_customer(db_session, mock_customer_input)
     assert resp.customer_id == mock_customer_record.customer_id
@@ -75,10 +76,8 @@ def test_create_account_success_customer_exists(db_session, mock_customer_record
 def test_get_account_by_number_success(db_session, mock_customer_input):
 
     cust = service.create_customer(db_session, mock_customer_input)
-
     acct = service.create_account_for_customer(db_session, cust, Decimal("50.0"))
 
-    # 3) now call the function under test
     resp = service.get_account_by_number(db_session, acct.account_number)
 
     assert resp.account_number == acct.account_number

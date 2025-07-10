@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -13,10 +13,11 @@ router = APIRouter()
 
 @router.post(
     "/",
+    status_code=status.HTTP_201_CREATED,
     response_model=AccountOutput,
     summary="Create an account",
     responses={
-        200: {
+        201: {
             "description": "Account created successfully",
             "content": {
                 "application/json": {
@@ -47,7 +48,7 @@ def create_account(
             db, customer_db, customer.initial_deposit
         )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error: {e}")
 
     return AccountOutput(
         account_number=new_account.account_number,
@@ -87,8 +88,8 @@ def get_balance(
     try:
         account = accounts_service.get_account_by_number(db, account_number)
     except AccountNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error {e}")
 
     return BalanceOutput(account_number=account.account_number, balance=account.balance)
