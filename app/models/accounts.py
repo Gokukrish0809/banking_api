@@ -13,7 +13,7 @@ class CustomerInput(BaseModel):
     Attributes:
         name (str): The full name of the customer.
         email (EmailStr): A unique, valid email address for the customer.
-        initial_deposit (Decimal): The opening deposit amount for the new account.
+        initial_deposit (Decimal): The initial deposit amount for the new account.
             Must be greater than 0.
     """
 

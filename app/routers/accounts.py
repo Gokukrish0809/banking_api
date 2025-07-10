@@ -40,7 +40,7 @@ def create_account(
     current_user=Depends(get_current_user),
 ) -> AccountOutput:
     """
-    Create an account for a cutomer.
+    Create an account for a customer.
     """
     try:
         customer_db = accounts_service.create_customer(db, customer)

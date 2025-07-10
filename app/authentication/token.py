@@ -11,7 +11,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
     Args:
         data (dict): A dictionary of claims to include in the token payload.
-            Typically must include a "sub" key for the subject (e.g., username).
         expires_delta (timedelta | None): Optional time duration after which
             the token should expire. If None, defaults to 15 minutes.
 

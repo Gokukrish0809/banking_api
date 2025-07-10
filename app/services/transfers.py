@@ -17,7 +17,7 @@ def perform_transfer(
     Move funds from one account to another, recording the transfer.
 
     Args:
-        db (Session): SQLAlchemy session to use for queries and persistence.
+        db (Session): SQLAlchemy session to use for queries.
         from_acc (int): Account number to debit.
         to_acc (int): Account number to credit.
         amount (Decimal): Amount to transfer; must be greater than zero.
@@ -27,7 +27,7 @@ def perform_transfer(
 
     Raises:
         SameAccountError: If from_acc and to_acc are the same.
-        InsufficientFundsError: If the source account’s balance is less than amount.
+        InsufficientFundsError: If the source account’s balance is less than transfer amount.
     """
     from_acc_validated = accounts_service.get_account_by_number(db, from_acc)
     to_acc_validated = accounts_service.get_account_by_number(db, to_acc)
