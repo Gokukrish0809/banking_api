@@ -17,14 +17,14 @@ def override_auth(client: TestClient):
 
 
 def test_create_account_happy_path(client: TestClient):
-    payload = {"name": "Alice", "email": "alice@example.com", "initial_deposit": 123.45}
+    payload = {"name": "random", "email": "random@example.com", "initial_deposit": 123.45}
     resp = client.post("/accounts/", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     # New account should have these fields:
     assert "account_number" in data
-    assert data["name"] == "Alice"
-    assert data["email"] == "alice@example.com"
+    assert data["name"] == "random"
+    assert data["email"] == "random@example.com"
     assert float(data["balance"]) == pytest.approx(123.45)
 
 

@@ -16,8 +16,16 @@ The backend API system is adequately tested with unit tests with 100% test cover
 - Python 3.10+
 - PostgreSQL
 - Virtual Environment (venv or conda)
+- Docker installed
+- Docker Compose (included with Docker Desktop)
 
 ### Installation & Setup
+
+**Docker**
+
+1. **Build and Run with Docker Compose**
+    docker-compose up --build
+
 
 1. **Create the virtual environment**  
     python -m venv venv
@@ -34,11 +42,11 @@ The backend API system is adequately tested with unit tests with 100% test cover
 4. **Start the API server** 
     uvicorn main:app --reload
 
-5. **Access API documentation** (Swagger UI)
+**Access API documentation** (Swagger UI)
     http://127.0.0.1:8000/docs
 
-6. **Running the test**
-    pytest --cov=authentication --cov=db --cov=routers --cov=utils --cov-report=term-missing
+**Running the test**
+    pytest --cov=app --cov-report=term-missing
 
 **Unit test Coverage Report**
 

@@ -20,3 +20,8 @@ def test_startup_event_calls_create_all(monkeypatch):
 
     # Assert our fake was called exactly once with the real engine
     assert called == [engine]
+
+def test_landing_page_happy_path(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Welcome to Entrix Banking API"}
