@@ -2,7 +2,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-import app.services.login as login_service
+from app.services import login as login_service
 from app.authentication.token import create_access_token
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, HASH_PASSWORD, USERNAME
 from app.models.login import Token

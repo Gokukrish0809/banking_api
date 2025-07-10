@@ -3,7 +3,7 @@ from decimal import Decimal
 from pydantic import Field
 from sqlalchemy.orm import Session
 
-import app.services.accounts as accounts_service
+from app.services import accounts as accounts_service
 from app.config import TIMEZONE
 from app.exceptions import (InsufficientFundsError,
                             SameAccountError, AccountNotFoundError)

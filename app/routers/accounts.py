@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-import app.services.accounts as accounts_service
+from app.services import accounts as accounts_service
 from app.authentication.oauth import get_current_user
 from app.database import get_db
 from app.exceptions import AccountNotFoundError
