@@ -26,7 +26,6 @@ def perform_transfer(
         Transfer: The newly created Transfer ORM object, including timestamp.
 
     Raises:
-        AccountNotFoundError: If either source or destination account does not exist.
         SameAccountError: If from_acc and to_acc are the same.
         InsufficientFundsError: If the source account’s balance is less than amount.
     """
@@ -73,10 +72,7 @@ def get_transfer_history_for_account(
 
     (No exceptions are raised here; any SQLAlchemyError will propagate to the caller.)
     """
-    account_validated = accounts_service.get_account_by_number(account_number)
-
-    if not account_validated :
-        raise AccountNotFoundError(account_validated.account_number)
+    account_validated = accounts_service.get_account_by_number(db, account_number)
     
     return (
         db.query(Transfer)

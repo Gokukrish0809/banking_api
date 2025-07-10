@@ -81,7 +81,7 @@ def test_get_transfer_history(db_session, two_accounts):
     history = transfer_service.get_transfer_history_for_account(
         db_session, acct1.account_number
     )
-    # Should return both, most recent first (5 then 10)
+    # Should return both, most recent first 5 then 10
     assert len(history) == 2
     assert history[0].amount == Decimal("5")
     assert history[1].amount == Decimal("10")

@@ -85,7 +85,7 @@ def test_transfer_funds_500(client: TestClient, monkeypatch):
     assert "internal server error" in resp.json()["detail"].lower()
 
 
-def test_get_history_happy(client: TestClient):
+def test_get_history_happy_path(client: TestClient):
     a1 = create_account(client, "Frank", "frank@example.com", Decimal("100.00"))
     a2 = create_account(client, "Grace", "grace@example.com", Decimal("50.00"))
     # two transfers
