@@ -54,7 +54,7 @@ def test_get_balance_happy_path(client: TestClient):
     # First create an account
     payload = {"name": "Bob", "email": "bob@example.com", "initial_deposit": 50.0}
     create = client.post("/accounts/", json=payload)
-    assert create.status_code == status.HTTP_201_OK
+    assert create.status_code == status.HTTP_201_CREATED
 
     acct_no = create.json()["account_number"]
     # Now fetch its balance
