@@ -8,7 +8,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 PyJWT
 python-multipart
-pytz
+tzdata
 pytest
 httpx
 pytest-cov

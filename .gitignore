@@ -3,7 +3,14 @@ __pycache__/
 .pytest_cache
 .coverage
 bank-api-env/
-authentication/__pycache__/
-db/__pycache__/
-routers/__pycache__/
+app/authentication/__pycache__/
+app/services/__pycache__/
+app/models/__pycache__/
+app/routers/__pycache__/
 tests/__pycache__/
+tests/authentication/__pycache__/
+tests/routers/__pycache__/
+tests/services/__pycache__/
+.mypy_cache
+.pytest_cache
+.ruff_cache

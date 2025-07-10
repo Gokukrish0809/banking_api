@@ -1,0 +1,37 @@
+# docker-compose.yml
+#version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       banking
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      # must match app/config.py defaults or override
+      DB_USER:     postgres
+      DB_PASSWORD: postgres
+      DB_NAME:     banking
+      DB_HOST:     db
+      DB_PORT:     "5432"
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
