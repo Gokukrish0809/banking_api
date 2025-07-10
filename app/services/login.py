@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 
 
-def verify_username(username_inp: str, username_correct) -> bool:
+def verify_username(username_inp: str, username_correct : str) -> bool:
     """
     Check whether the provided username matches the expected username.
 

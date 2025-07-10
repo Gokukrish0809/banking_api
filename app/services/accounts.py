@@ -4,10 +4,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import AccountNotFoundError
-from app.models.accounts import Account, Customer
+from app.models.accounts import Account, Customer, CustomerInput
 
 
-def create_customer(db: Session, customer_data) -> Customer:
+def create_customer(db: Session, customer_data: CustomerInput) -> Customer:
     """
     Retrieve an existing customer by email if exists or create a new one.
 

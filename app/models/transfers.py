@@ -26,8 +26,8 @@ class TransferInput(BaseModel):
         schema_extra = {
             "example": {
                 "from_account_number": 1234,
-                "to_account_number":   5678,
-                "amount":              "100.00"
+                "to_account_number":  5678,
+                "amount":  "100.00"
             }
         }
 
